@@ -11,7 +11,7 @@
 		public function about() {
 			return array(
 				'name'			=> 'Field: Advanced Upload',
-				'version'		=> '1.001',
+				'version'		=> '1.002',
 				'release-date'	=> '2009-01-08',
 				'author'		=> array(
 					'name'			=> 'Rowan Lewis',

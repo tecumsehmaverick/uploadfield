@@ -3,6 +3,8 @@
 	if (!defined('__IN_SYMPHONY__')) die('<h2>Symphony Error</h2><p>You cannot directly access this file</p>');
 	
 	class FieldAdvancedUpload extends Field {
+		protected $_mimes = array();
+		
 	/*-------------------------------------------------------------------------
 		Definition:
 	-------------------------------------------------------------------------*/
@@ -12,6 +14,19 @@
 			
 			$this->_name = 'Advanced Upload';
 			$this->_required = true;
+			$this->_mimes = array(
+				'image'	=> array(
+					'image/bmp',
+					'image/gif',
+					'image/jpg',
+					'image/jpeg',
+					'image/png'
+				),
+				'text'	=> array(
+					'text/plain',
+					'text/html'
+				)
+			);
 			
 			$this->set('show_column', 'yes');
 			$this->set('required', 'yes');
@@ -201,7 +216,7 @@
 			
 		// Output -------------------------------------------------------------
 			
-			if ($error == null and !empty($data['file'])) {
+			if ($error == null and !empty($data['file']) and in_array($data['mimetype'], $this->_mimes['image'])) {
 				$output = new XMLElement('p');
 				$output->setAttribute('class', 'output');
 				
@@ -378,36 +393,20 @@
 			);
 		}
 		
-		private function getMimeType($file) {
-			$imageMimeTypes = array(
-				'image/bmp',
-				'image/gif',
-				'image/jpg',
-				'image/jpeg',
-				'image/png',
-			);
-			
-			if (in_array('image/' . General::getExtension($file), $imageMimeTypes)) {
+		protected function getMimeType($file) {
+			if (in_array('image/' . General::getExtension($file), $this->_mimes['image'])) {
 				return 'image/' . General::getExtension($file);
 			}
 			
 			return 'unknown';
 		}
 		
-		public function getMetaInfo($file, $type) {
-			$imageMimeTypes = array(
-				'image/bmp',
-				'image/gif',
-				'image/jpg',
-				'image/jpeg',
-				'image/png',
-			);
-			
+		protected function getMetaInfo($file, $type) {
 			$meta = array(
 				'creation'	=> DateTimeObj::get('c', filemtime($file))
 			);
 			
-			if (in_array($type, $imageMimeTypes)) {
+			if (in_array($type, $this->_mimes['image'])) {
 				include_once(TOOLKIT . '/class.image.php');
 				
 				$imageMeta = Image::meta($file);
