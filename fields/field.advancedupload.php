@@ -223,7 +223,7 @@
                 $image = new XMLElement('img');
                 $image->setAttribute('src', URL . '/workspace' . $data['file']);
                 $image->setAttribute('width', '200');
-                $image->setAttribute('alt', "&lt;{$handle} id=\"{$entry_id}}\" /&gt;");
+                $image->setAttribute('alt', "&lt;{$handle} id=&quot;{$entry_id}}&quot; /&gt;");
                 
                 $output->appendChild($image);
                 $div->appendChild($output);
