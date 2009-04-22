@@ -489,7 +489,7 @@
 			if (!$file = $data['file']) return null;
 			
 			if ($link) {
-				$link->setValue(basename($file));
+				$link->setValue($data['name']);
 				
 				return $link->generate();
 				
