@@ -1,8 +1,5 @@
 <?php
 	
-	require_once(TOOLKIT . '/class.field.php');
-	require_once(TOOLKIT . '/fields/field.upload.php');
-	
 	class Extension_AdvancedUploadField extends Extension {
 	/*-------------------------------------------------------------------------
 		Definition:
@@ -11,14 +8,14 @@
 		public function about() {
 			return array(
 				'name'			=> 'Field: Advanced Upload',
-				'version'		=> '1.002',
-				'release-date'	=> '2009-01-08',
+				'version'		=> '1.004',
+				'release-date'	=> '2009-04-23',
 				'author'		=> array(
 					'name'			=> 'Rowan Lewis',
 					'website'		=> 'http://pixelcarnage.com/',
 					'email'			=> 'rowan@pixelcarnage.com'
 				),
-				'description'	=> 'An advanced upload field that supports dragging and dropping.'
+				'description'	=> 'An enhanced upload field with image preview.'
 			);
 		}
 		

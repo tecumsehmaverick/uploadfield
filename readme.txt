@@ -1,9 +1,9 @@
 Field: Advanced Upload
 -------------------------------------------------------------------------------
 
-Version: 1.001
+Version: 1.004
 Author: Rowan Lewis <rowan@pixelcarnage.com>
-Build Date: 07 January 2009
+Build Date: 23 April 2009
 Requirements: Symphony 2
 
 
