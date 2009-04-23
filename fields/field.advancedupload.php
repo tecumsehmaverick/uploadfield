@@ -470,11 +470,12 @@
 			$item = new XMLElement($this->get('element_name'));
 			$item->setAttributeArray(array(
 				'size'	=> General::formatFilesize(filesize(WORKSPACE . $data['file'])),
-				'path'	=> str_replace(WORKSPACE, NULL, dirname(WORKSPACE . $data['file'])),
-				'type'	=> $data['mimetype']
+				'type'	=> $data['mimetype'],
+				'name'	=> General::sanitize($data['name'])
 			));
 			
-			$item->appendChild(new XMLElement('filename', General::sanitize(basename($data['file']))));
+			$item->appendChild(new XMLElement('path', str_replace(WORKSPACE, NULL, dirname(WORKSPACE . $data['file']))));
+			$item->appendChild(new XMLElement('file', General::sanitize(basename($data['file']))));
 			
 			$meta = unserialize($data['meta']);
 			
