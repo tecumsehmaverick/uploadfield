@@ -4,6 +4,7 @@
 	
 	class FieldAdvancedUpload extends Field {
 		protected $_mimes = array();
+		protected $_driver = null;
 		
 	/*-------------------------------------------------------------------------
 		Definition:
@@ -14,6 +15,7 @@
 			
 			$this->_name = 'Advanced Upload';
 			$this->_required = true;
+			$this->_driver = $this->_engine->ExtensionManager->create('advanceduploadfield');
 			$this->_mimes = array(
 				'image'	=> array(
 					'image/bmp',
@@ -77,7 +79,7 @@
 		public function entryDataCleanup($entry_id, $data) {
 			$file_location = WORKSPACE . '/' . ltrim($data['file'], '/');
 			
-			if (file_exists($file_location)) General::deleteFile($file_location);
+			if (is_file($file_location)) General::deleteFile($file_location);
 			
 			parent::entryDataCleanup($entry_id);
 			
@@ -174,7 +176,7 @@
 	-------------------------------------------------------------------------*/
 		
 		public function displayPublishPanel(&$wrapper, $data = null, $error = null, $prefix = null, $postfix = null, $entry_id = null) {
-			$this->_engine->Page->addStylesheetToHead(URL . '/extensions/advanceduploadfield/assets/form.css', 'screen');
+			$this->_driver->addHeaders($this->_engine->Page);
 			
 			if (!$error and !is_writable(DOCROOT . $this->get('destination') . '/')) {
 				$error = 'Destination folder, <code>'.$this->get('destination').'</code>, is not writable. Please check permissions.';
@@ -184,9 +186,6 @@
 			
 		// Image --------------------------------------------------------------
 			
-			$div = new XMLElement('div');
-			$div->setAttribute('class', 'imageuploadfield');
-			
 			$label = Widget::Label($this->get('label'));
 			$label->setAttribute('class', 'file');
 			
@@ -195,6 +194,13 @@
 			}
 			
 			$span = new XMLElement('span');
+			
+			if ($error == null and !empty($data['file']) and in_array($data['mimetype'], $this->_mimes['image'])) {
+				$image = new XMLElement('img');
+				$image->setAttribute('src', URL . '/workspace' . $data['file']);
+				$image->setAttribute('width', '200');
+				$span->appendChild($image);
+			}
 			
 			if ($data['file']) {
 				$span->appendChild(Widget::Anchor($data['name'], URL . '/workspace' . $data['file']));
@@ -211,23 +217,7 @@
 				$label = Widget::wrapFormElementWithError($label, $error);
 			}
 			
-			$div->appendChild($label);
-			
-		// Output -------------------------------------------------------------
-			
-			if ($error == null and !empty($data['file']) and in_array($data['mimetype'], $this->_mimes['image'])) {
-				$output = new XMLElement('p');
-				$output->setAttribute('class', 'output');
-				
-				$image = new XMLElement('img');
-				$image->setAttribute('src', URL . '/workspace' . $data['file']);
-				$image->setAttribute('width', '200');
-				
-				$output->appendChild($image);
-				$div->appendChild($output);
-			}
-			
-			$wrapper->appendChild($div);
+			$wrapper->appendChild($label);
 		}
 		
 	/*-------------------------------------------------------------------------
@@ -421,7 +411,7 @@
 				");
 				$existing_file = $abs_path . '/' . basename($row['file']);
 				
-				General::deleteFile($existing_file);
+				if (is_file($existing_file)) General::deleteFile($existing_file);
 			}
 			
 			$status = self::__OK__;

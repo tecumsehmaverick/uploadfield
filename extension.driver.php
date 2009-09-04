@@ -38,6 +38,20 @@
 			
 			return true;
 		}
+		
+	/*-------------------------------------------------------------------------
+		Utilites:
+	-------------------------------------------------------------------------*/
+		
+		protected $addedHeaders = false;
+		
+		public function addHeaders($page) {
+			if (!$this->addedHeaders) {
+				$page->addStylesheetToHead(URL . '/extensions/advanceduploadfield/assets/form.css');
+				
+				$this->addedHeaders = true;
+			}
+		}
 	}
 	
 ?>
