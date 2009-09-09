@@ -190,41 +190,57 @@
 			
 		// Image --------------------------------------------------------------
 			
-			$label = Widget::Label($this->get('label'));
-			$label->setAttribute('class', 'file');
+			$div = new XMLElement('div');
+			$div->appendChild(Widget::Label($this->get('label')));
 			
 			if ($this->get('required') != 'yes') {
 				$label->appendChild(new XMLElement('i', 'Optional'));
 			}
 			
-			$span = new XMLElement('span');
-			
 			if (
 				$error == null and !empty($data['file'])
 				and in_array($data['mimetype'], $this->_mimes['image'])
 			) {
+				$details = new XMLElement('span');
+				$details->setAttribute('class', 'details');
+				$preview = new XMLElement('span');
+				$preview->setAttribute('class', 'preview');
 				$image = new XMLElement('img');
 				$image->setAttribute('src', URL . '/workspace' . $data['file']);
 				$image->setAttribute('width', '200');
-				$span->appendChild($image);
+				$preview->appendChild($image);
+				$details->appendChild($preview);
+				
+				$link = new XMLElement('a', __('Clear File'));
+				$link->setAttribute('class', 'clear');
+				$details->appendChild($link);
+				
+				$link = Widget::Anchor($data['name'], URL . '/workspace' . $data['file']);
+				$details->appendChild($link);
+				
+				$list = new XMLElement('dl');
+				$list->appendChild(new XMLElement('dt', __('Size:')));
+				$list->appendChild(new XMLElement('dd', General::formatFilesize(filesize(WORKSPACE . $data['file']))));
+				$list->appendChild(new XMLElement('dt', __('Type:')));
+				$list->appendChild(new XMLElement('dd', General::sanitize($data['mimetype'])));
+				$details->appendChild($list);
+				$div->appendChild($details);
 			}
 			
-			if ($data['file']) {
-				$span->appendChild(Widget::Anchor($data['name'], URL . '/workspace' . $data['file']));
-			}
-			
+			$span = new XMLElement('span');
+			$span->setAttribute('class', 'upload');
 			$span->appendChild(Widget::Input(
 				"fields{$prefix}[{$handle}]{$postfix}",
 				$data['file'], ($data['file'] ? 'hidden' : 'file')
 			));
 			
-			$label->appendChild($span);
+			$div->appendChild($span);
 			
 			if ($error != null) {
-				$label = Widget::wrapFormElementWithError($label, $error);
+				$div = Widget::wrapFormElementWithError($div, $error);
 			}
 			
-			$wrapper->appendChild($label);
+			$wrapper->appendChild($div);
 		}
 		
 	/*-------------------------------------------------------------------------
@@ -469,8 +485,8 @@
 			
 			$item = new XMLElement($this->get('element_name'));
 			$item->setAttributeArray(array(
-				'size'	=> General::formatFilesize($filesize),
-				'type'	=> filesize(WORKSPACE . $data['file']),
+				'size'	=> General::formatFilesize(filesize(WORKSPACE . $data['file'])),
+				'type'	=> General::sanitize($data['mimetype']),
 				'name'	=> General::sanitize($data['name'])
 			));
 			

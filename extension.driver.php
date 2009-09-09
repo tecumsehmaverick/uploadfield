@@ -47,7 +47,8 @@
 		
 		public function addHeaders($page) {
 			if (!$this->addedHeaders) {
-				$page->addStylesheetToHead(URL . '/extensions/advanceduploadfield/assets/form.css');
+				$page->addStylesheetToHead(URL . '/extensions/advanceduploadfield/assets/publish.css', 'screen', 9745190);
+				$page->addScriptToHead(URL . '/extensions/advanceduploadfield/assets/publish.js', 9745190);
 				
 				$this->addedHeaders = true;
 			}
