@@ -2,12 +2,21 @@ jQuery(document).ready(function() {
 	jQuery('.field-advancedupload').each(function() {
 		var field = jQuery(this);
 		var details = field.find('.details');
+		var details_clear = details.find('.clear');
 		var upload = field.find('.upload');
+		var preview = details.find('.preview');
+		var preview_image = preview.find('img');
 		
 		if (details.length) {
+			var top = ((details.height() + 24) - preview.height()) / 2;
+			var left = (preview.width() - preview_image.width()) / 2;
+			
+			if (top > 0) preview.css('top', top + 'px');
+			if (left > 0) preview.css('left', left + 'px');
+			
 			upload.hide();
 			
-			details.find('.clear').bind('click', function() {
+			details_clear.bind('click', function() {
 				var hidden = upload.find('input[type = "hidden"]');
 				var file = jQuery('<input type="file" />');
 				
@@ -19,15 +28,13 @@ jQuery(document).ready(function() {
 				upload.show();
 			});
 			
-			details.find('.preview').bind('click', function() {
-				var preview = details.find('.preview img');
-				var overlay = jQuery('<div class="field-advancedupload-overlay" />');
-				
-				overlay.append(preview.clone());
-				overlay.appendTo('body');
-				overlay.bind('click', function() {
-					overlay.remove();
-				});
+			preview_image.bind('click', function() {
+				jQuery('<div class="field-advancedupload-overlay" />')
+					.append(preview_image.clone())
+					.appendTo('body').bind('click',
+						function() {
+							jQuery(this).remove();
+						});
 			});
 		}
 	});

@@ -191,24 +191,27 @@
 		// Image --------------------------------------------------------------
 			
 			$div = new XMLElement('div');
-			$div->appendChild(Widget::Label($this->get('label')));
+			$label = Widget::Label($this->get('label'));
 			
 			if ($this->get('required') != 'yes') {
 				$label->appendChild(new XMLElement('i', 'Optional'));
 			}
 			
-			if (
-				$error == null and !empty($data['file'])
-				and in_array($data['mimetype'], $this->_mimes['image'])
-			) {
+			$div->appendChild($label);
+			
+			if ($error == null and !empty($data['file'])) {
 				$details = new XMLElement('span');
 				$details->setAttribute('class', 'details');
-				$preview = new XMLElement('span');
-				$preview->setAttribute('class', 'preview');
-				$image = new XMLElement('img');
-				$image->setAttribute('src', URL . '/workspace' . $data['file']);
-				$preview->appendChild($image);
-				$details->appendChild($preview);
+				
+				if (in_array($data['mimetype'], $this->_mimes['image'])) {
+					$details->setAttribute('class', 'details image');
+					$preview = new XMLElement('span');
+					$preview->setAttribute('class', 'preview');
+					$image = new XMLElement('img');
+					$image->setAttribute('src', URL . '/workspace' . $data['file']);
+					$preview->appendChild($image);
+					$details->appendChild($preview);
+				}
 				
 				$link = new XMLElement('a', __('Clear File'));
 				$link->setAttribute('class', 'clear');
@@ -226,14 +229,13 @@
 				$div->appendChild($details);
 			}
 			
-			$span = new XMLElement('span');
-			$span->setAttribute('class', 'upload');
-			$span->appendChild(Widget::Input(
+			$upload = new XMLElement('span');
+			$upload->setAttribute('class', 'upload');
+			$upload->appendChild(Widget::Input(
 				"fields{$prefix}[{$handle}]{$postfix}",
 				$data['file'], ($data['file'] ? 'hidden' : 'file')
 			));
-			
-			$div->appendChild($span);
+			$div->appendChild($upload);
 			
 			if ($error != null) {
 				$div = Widget::wrapFormElementWithError($div, $error);
