@@ -182,6 +182,10 @@
 				$error = 'Destination folder, <code>'.$this->get('destination').'</code>, is not writable. Please check permissions.';
 			}
 			
+			if (isset($data['file']) and !is_file(WORKSPACE . '/' . $data['file'])) {
+				$data['file'] = null;
+			}
+			
 			$handle = $this->get('element_name');
 			
 		// Image --------------------------------------------------------------
@@ -195,7 +199,10 @@
 			
 			$span = new XMLElement('span');
 			
-			if ($error == null and !empty($data['file']) and in_array($data['mimetype'], $this->_mimes['image'])) {
+			if (
+				$error == null and !empty($data['file'])
+				and in_array($data['mimetype'], $this->_mimes['image'])
+			) {
 				$image = new XMLElement('img');
 				$image->setAttribute('src', URL . '/workspace' . $data['file']);
 				$image->setAttribute('width', '200');
@@ -365,14 +372,15 @@
 				// Existing data found:
 				if (is_array($current) and count($current) == 5) {
 					return $current;
-					
+				}
+				
 				// Look at new file:
-				} else {
+				else if (is_file(WORKSPACE . '/' . $data)) {
 					return array(
 						'name'		=> basename($data),
 						'file'		=> $data,
 						'mimetype'	=> $this->getMimeType($data),
-						'size'		=> filesize(WORKSPACE . $data),
+						'size'		=> filesize(WORKSPACE . '/' . $data),
 						'meta'		=> serialize($this->getMetaInfo(WORKSPACE . $data, $this->getMimeType($data)))
 					);
 				}
@@ -457,10 +465,12 @@
 	-------------------------------------------------------------------------*/
 		
 		public function appendFormattedElement(&$wrapper, $data) {
+			if (!is_file(WORKSPACE . $data['file'])) return;
+			
 			$item = new XMLElement($this->get('element_name'));
 			$item->setAttributeArray(array(
-				'size'	=> General::formatFilesize(filesize(WORKSPACE . $data['file'])),
-				'type'	=> $data['mimetype'],
+				'size'	=> General::formatFilesize($filesize),
+				'type'	=> filesize(WORKSPACE . $data['file']),
 				'name'	=> General::sanitize($data['name'])
 			));
 			
@@ -477,6 +487,7 @@
 		}
 		
 		public function prepareTableValue($data, XMLElement $link = null) {
+			if (!is_file(WORKSPACE . $data['file'])) return null;
 			if (!$file = $data['file']) return null;
 			
 			if ($link) {
