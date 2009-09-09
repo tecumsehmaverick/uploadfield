@@ -5,7 +5,6 @@
 .field-advancedupload > div > label {
 	margin: 0;
 }
-.field-advancedupload > div > .preview,
 .field-advancedupload > div > .details,
 .field-advancedupload > div > .upload {
 	background: #f5f5f3;
@@ -16,7 +15,6 @@
 	padding: 12px;
 	position: relative;
 }
-
 .field-advancedupload > div > .details {
 	padding-left: 162px;
 	height: 4.5em;
@@ -43,6 +41,21 @@
 	width: 150px;
 }
 .field-advancedupload > div > .details > .preview img {
+	cursor: pointer;
 	max-width: 100%;
 	vertical-align: bottom;
+}
+
+.field-advancedupload-overlay {
+	background: rgba(0, 0, 0, 0.4);
+	height: 100%;
+	left: 0;
+	position: fixed;
+	top: 0;
+	width: 100%;
+	z-index: 20000;
+}
+.field-advancedupload-overlay img {
+	max-height: 100%;
+	max-width: 100%;
 }

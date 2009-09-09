@@ -207,7 +207,6 @@
 				$preview->setAttribute('class', 'preview');
 				$image = new XMLElement('img');
 				$image->setAttribute('src', URL . '/workspace' . $data['file']);
-				$image->setAttribute('width', '200');
 				$preview->appendChild($image);
 				$details->appendChild($preview);
 				
