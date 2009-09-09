@@ -8,12 +8,12 @@
 		public function about() {
 			return array(
 				'name'			=> 'Field: Advanced Upload',
-				'version'		=> '1.004',
-				'release-date'	=> '2009-04-23',
+				'version'		=> '1.0.6',
+				'release-date'	=> '2009-09-09',
 				'author'		=> array(
 					'name'			=> 'Rowan Lewis',
-					'website'		=> 'http://pixelcarnage.com/',
-					'email'			=> 'rowan@pixelcarnage.com'
+					'website'		=> 'http://rowanlewis.com/',
+					'email'			=> 'me@rowanlewis.com'
 				),
 				'description'	=> 'An enhanced upload field with image preview.'
 			);
