@@ -144,6 +144,18 @@
 			
 			$this->buildValidationSelect($wrapper, $this->get('validator'), "fields[{$order}][validator]", 'upload');
 			
+		// Serialise ----------------------------------------------------------
+			
+			$label = Widget::Label();
+			$input = Widget::Input(
+				"fields[{$order}][serialise]", 'yes', 'checkbox'
+			);
+			
+			if ($this->get('serialise') == 'yes') $input->setAttribute('checked', 'checked');
+			
+			$label->setValue($input->generate() . ' ' . __('Serialise file names'));
+			$wrapper->appendChild($label);
+			
 			$this->appendRequiredCheckbox($wrapper);
 			$this->appendShowColumnCheckbox($wrapper);
 		}
@@ -157,7 +169,8 @@
 			$fields = array(
 				'field_id'		=> $field_id,
 				'destination'	=> $this->get('destination'),
-				'validator'		=> $fields['validator'] == 'custom' ? null : $this->get('validator')
+				'validator'		=> $this->get('validator'),
+				'serialise'		=> ($this->get('serialise') == 'yes' ? 'yes' : 'no')
 			);
 			
 			$this->_engine->Database->query("
@@ -316,7 +329,7 @@
 			}
 			
 			// Sanitize the filename:
-			if (is_array($data) and isset($data['name'])) {
+			if ($this->get('serialise') == 'yes' and is_array($data) and isset($data['name'])) {
 				$data['name'] = $this->getHashedFilename($data['name']);
 			}
 			
@@ -410,7 +423,10 @@
 			// Sanitize the filename:
 			if (is_array($data) and isset($data['name'])) {
 				$name = $data['name'];
-				$data['name'] = $this->getHashedFilename($data['name']);
+				
+				if ($this->get('serialise') == 'yes') {
+					$data['name'] = $this->getHashedFilename($data['name']);
+				}
 			}
 			
 			// Upload the new file:

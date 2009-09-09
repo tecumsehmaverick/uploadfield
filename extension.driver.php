@@ -30,7 +30,7 @@
 					`field_id` int(11) unsigned NOT NULL,
 					`destination` varchar(255) NOT NULL,
 					`validator` varchar(50) default NULL,
-					`filters` varchar(255) default NULL,
+					`serialise` enum('yes','no') default NULL,
 					PRIMARY KEY  (`id`),
 					KEY `field_id` (`field_id`)
 				)
