@@ -203,43 +203,42 @@
 			
 		// Image --------------------------------------------------------------
 			
-			$div = new XMLElement('div');
 			$label = Widget::Label($this->get('label'));
 			
 			if ($this->get('required') != 'yes') {
 				$label->appendChild(new XMLElement('i', 'Optional'));
 			}
 			
-			$div->appendChild($label);
+			$wrapper->appendChild($label);
 			
 			if ($error == null and !empty($data['file'])) {
-				$details = new XMLElement('span');
-				$details->setAttribute('class', 'details');
-				
 				if (in_array($data['mimetype'], $this->_mimes['image'])) {
-					$details->setAttribute('class', 'details image');
-					$preview = new XMLElement('span');
+					$preview = new XMLElement('div');
 					$preview->setAttribute('class', 'preview');
 					$image = new XMLElement('img');
 					$image->setAttribute('src', URL . '/workspace' . $data['file']);
 					$preview->appendChild($image);
-					$details->appendChild($preview);
+					$wrapper->appendChild($preview);
 				}
 				
+				$details = new XMLElement('dl');
+				$details->setAttribute('class', 'details');
+				
 				$link = new XMLElement('a', __('Clear File'));
-				$link->setAttribute('class', 'clear');
-				$details->appendChild($link);
+				$item = new XMLElement('dt', $link->generate());
+				$item->setAttribute('class', 'clear');
+				$details->appendChild($item);
 				
 				$link = Widget::Anchor($data['name'], URL . '/workspace' . $data['file']);
-				$details->appendChild($link);
+				$item = new XMLElement('dt', $link->generate());
+				$item->setAttribute('class', 'popup');
+				$details->appendChild($item);
 				
-				$list = new XMLElement('dl');
-				$list->appendChild(new XMLElement('dt', __('Size:')));
-				$list->appendChild(new XMLElement('dd', General::formatFilesize(filesize(WORKSPACE . $data['file']))));
-				$list->appendChild(new XMLElement('dt', __('Type:')));
-				$list->appendChild(new XMLElement('dd', General::sanitize($data['mimetype'])));
-				$details->appendChild($list);
-				$div->appendChild($details);
+				$details->appendChild(new XMLElement('dt', __('Size:')));
+				$details->appendChild(new XMLElement('dd', General::formatFilesize(filesize(WORKSPACE . $data['file']))));
+				$details->appendChild(new XMLElement('dt', __('Type:')));
+				$details->appendChild(new XMLElement('dd', General::sanitize($data['mimetype'])));
+				$wrapper->appendChild($details);
 			}
 			
 			$upload = new XMLElement('span');
@@ -248,13 +247,11 @@
 				"fields{$prefix}[{$handle}]{$postfix}",
 				$data['file'], ($data['file'] ? 'hidden' : 'file')
 			));
-			$div->appendChild($upload);
+			$wrapper->appendChild($upload);
 			
 			if ($error != null) {
-				$div = Widget::wrapFormElementWithError($div, $error);
+				$wrapper = Widget::wrapFormElementWithError($wrapper, $error);
 			}
-			
-			$wrapper->appendChild($div);
 		}
 		
 	/*-------------------------------------------------------------------------
@@ -299,29 +296,30 @@
 			if ($data['error'] != UPLOAD_ERR_NO_FILE and $data['error'] != UPLOAD_ERR_OK) {
 				switch($data['error']) {
 					case UPLOAD_ERR_INI_SIZE:
-						$size = (is_numeric(ini_get('upload_max_filesize')) ? General::formatFilesize(ini_get('upload_max_filesize')) : ini_get('upload_max_filesize'));
-						$message = "File chosen in '{$label}' exceeds the maximum allowed upload size of {$size} specified by your host.";
+						$size = (
+							is_numeric(ini_get('upload_max_filesize'))
+							? General::formatFilesize(ini_get('upload_max_filesize'))
+							: ini_get('upload_max_filesize')
+						);
+						$message = __('File chosen in \'%s\' exceeds the maximum allowed upload size of %s specified by your host.', $label, $size);
 						break;
 						
 					case UPLOAD_ERR_FORM_SIZE:
-						$size = General::formatFilesize($this->_engine->Configuration->get('max_upload_size', 'admin'));
-						$message = "File chosen in '{$label}' exceeds the maximum allowed upload size of {$size}, specified by Symphony.";
+						$size = General::formatFilesize(Symphony::Configuration()->get('max_upload_size', 'admin'));
+						$message = __('File chosen in \'%s\' exceeds the maximum allowed upload size of {$size}, specified by Symphony.', $label);
 						break;
-
+						
 					case UPLOAD_ERR_PARTIAL:
-						$message = "File chosen in '{$label}' was only partially uploaded due to an error.";
-						break;
-
 					case UPLOAD_ERR_NO_TMP_DIR:
-						$message = "File chosen in '{$label}' was only partially uploaded due to an error.";
+						$message = __('File chosen in \'%s\' was only partially uploaded due to an error.', $label);
 						break;
-
+						
 					case UPLOAD_ERR_CANT_WRITE:
-						$message = "Uploading '{$label}' failed. Could not write temporary file to disk.";
+						$message = __('Uploading \'%s\' failed. Could not write temporary file to disk.', $label);
 						break;
-
+						
 					case UPLOAD_ERR_EXTENSION:
-						$message = "Uploading '{$label}' failed. File upload stopped by extension.";
+						$message = __('Uploading \'%s\' failed. File upload stopped by extension.', $label);
 						break;
 				}
 				
@@ -362,7 +360,7 @@
 			}
 			
 			if (($existing_file != $new_file) and file_exists($new_file)) {
-				$message = "A file with the name {$data['name']} already exists in " . $this->get('destination') . '. Please rename the file first, or choose another.';
+				$message = __('A file with the name %s already exists in %s. Please rename the file first, or choose another.', $data['name'], $this->get('destination'));
 				
 				return self::__INVALID_FIELDS__;				
 			}
@@ -373,38 +371,45 @@
 		public function processRawFieldData($data, &$status, $simulate = false, $entry_id = null) {
 			$status = self::__OK__;
 			
-			// Its not an array, so just retain the current data and return
-			if (!is_array($data)) {
-				$status = self::__OK__;
-				
-				// Recal existing data:
-				$current = $this->_engine->Database->fetchRow(
-					0, sprintf(
-						"
-							SELECT
-								f.name,
-								f.file,
-								f.size,
-								f.mimetype,
-								f.meta
-							FROM
-								`tbl_entries_data_%s` AS f
-							WHERE
-								f.entry_id = '%s'
-								AND f.file = '%s'
-							LIMIT 1
-						",
-						$this->get('id'), $entry_id,
-						$this->cleanValue($data)
-					)
-				);
-				
-				// Existing data found:
-				if (is_array($current) and count($current) == 5) {
-					return $current;
+			// Recal existing data:
+			$existing = Symphony::Database()->fetchRow(
+				0, sprintf(
+					"
+						SELECT
+							f.name,
+							f.file,
+							f.size,
+							f.mimetype,
+							f.meta
+						FROM
+							`tbl_entries_data_%s` AS f
+						WHERE
+							f.entry_id = '%s'
+						LIMIT 1
+					",
+					$this->get('id'), $entry_id
+				)
+			);
+			
+			if ($simulate) return;
+			
+			// No file sent, cleanup existing:
+			if (is_null($data) or $data == '' or (isset($data['error']) and $data['error'] != UPLOAD_ERR_OK)) {
+				if (isset($existing['file']) and is_file(WORKSPACE . $existing['file'])) {
+					General::deleteFile(WORKSPACE . $existing['file']);
 				}
 				
-				// Look at new file:
+				return;
+			}
+			
+			// Accept a path:
+			if (is_string($data)) {
+				// Existing data found:
+				if (is_array($existing) and $existing['file'] == $data) {
+					return $existing;
+				}
+				
+				// Examine file:
 				else if (is_file(WORKSPACE . '/' . $data)) {
 					return array(
 						'name'		=> basename($data),
@@ -416,52 +421,35 @@
 				}
 			}
 			
-			if ($simulate) return;
-			
-			if ($data['error'] == UPLOAD_ERR_NO_FILE or $data['error'] != UPLOAD_ERR_OK) return;
+			$path = rtrim(preg_replace('%^/workspace%', '', $this->get('destination')), '/');
+			$name = $data['name'];
 			
 			// Sanitize the filename:
-			if (is_array($data) and isset($data['name'])) {
-				$name = $data['name'];
-				
-				if ($this->get('serialise') == 'yes') {
-					$data['name'] = $this->getHashedFilename($data['name']);
-				}
+			if ($this->get('serialise') == 'yes') {
+				$data['name'] = $this->getHashedFilename($data['name']);
 			}
 			
-			// Upload the new file:
-			$abs_path = DOCROOT . '/' . trim($this->get('destination'), '/');
-			$rel_path = str_replace('/workspace', '', $this->get('destination'));
-
-			if (!General::uploadFile($abs_path, $data['name'], $data['tmp_name'], $this->_engine->Configuration->get('write_mode', 'file'))) {
-				$message = "There was an error while trying to upload the file <code>{$data['name']}</code> to the target directory <code>workspace/{$rel_path}</code>.";
+			if (!General::uploadFile(
+				DOCROOT . '/' . trim($this->get('destination'), '/'),
+				$data['name'], $data['tmp_name'],
+				Symphony::Configuration()->get('write_mode', 'file')
+			)) {
+				$message = __(
+					'There was an error while trying to upload the file <code>%s</code> to the target directory <code>workspace/%s</code>.',
+					$data['name'], $path
+				);
 				$status = self::__ERROR_CUSTOM__;
 				return;
 			}
 			
-			if ($entry_id) {
-				$field_id = $this->get('id');
-				$row = $this->Database->fetchRow(0, "
-					SELECT
-						f.*
-					FROM
-						`tbl_entries_data_{$field_id}` AS f
-					WHERE
-						f.entry_id = '{$entry_id}'
-					LIMIT 1
-				");
-				$existing_file = $abs_path . '/' . basename($row['file']);
-				
-				if (is_file($existing_file)) General::deleteFile($existing_file);
+			// Remove file being replaced:
+			if (isset($existing['file']) and is_file(WORKSPACE . $existing['file'])) {
+				General::deleteFile(WORKSPACE . $existing['file']);
 			}
-			
-			$status = self::__OK__;
-			
-			$file = rtrim($rel_path, '/') . '/' . trim($data['name'], '/');
 			
 			return array(
 				'name'		=> $name,
-				'file'		=> $file,
+				'file'		=> $path . '/' . trim($data['name'], '/'),
 				'size'		=> $data['size'],
 				'mimetype'	=> $data['type'],
 				'meta'		=> serialize($this->getMetaInfo(WORKSPACE . $file, $data['type']))
