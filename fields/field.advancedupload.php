@@ -86,6 +86,24 @@
 			return true;
 		}
 		
+		public function sanitizeDataArray(&$data) {
+			if (!isset($data['file']) or $data['file'] == '') return false;
+			
+			if (!isset($data['name']) or $data['name'] == '') {
+				$data['name'] = basename($data['file']);
+			}
+			
+			if (!isset($data['size']) or empty($data['size'])) {
+				$data['size'] = 0;
+			}
+			
+			if (!isset($data['mimetype']) or $data['mimetype'] == '') {
+				$data['mimetype'] = 'application/octet-stream';
+			}
+			
+			return true;
+		}
+		
 	/*-------------------------------------------------------------------------
 		Settings:
 	-------------------------------------------------------------------------*/
@@ -195,10 +213,6 @@
 				$error = 'Destination folder, <code>'.$this->get('destination').'</code>, is not writable. Please check permissions.';
 			}
 			
-			if (isset($data['file']) and !is_file(WORKSPACE . '/' . $data['file'])) {
-				$data['file'] = null;
-			}
-			
 			$handle = $this->get('element_name');
 			
 		// Image --------------------------------------------------------------
@@ -212,7 +226,11 @@
 			$wrapper->appendChild($label);
 			
 			if ($error == null and !empty($data['file'])) {
-				if (in_array($data['mimetype'], $this->_mimes['image'])) {
+				if (!is_file(WORKSPACE . $data['file'])) {
+					$error = __('Destination file could not be found.');
+				}
+				
+				else if (in_array($data['mimetype'], $this->_mimes['image'])) {
 					$preview = new XMLElement('div');
 					$preview->setAttribute('class', 'preview');
 					$image = new XMLElement('img');
@@ -235,7 +253,7 @@
 				$details->appendChild($item);
 				
 				$details->appendChild(new XMLElement('dt', __('Size:')));
-				$details->appendChild(new XMLElement('dd', General::formatFilesize(filesize(WORKSPACE . $data['file']))));
+				$details->appendChild(new XMLElement('dd', General::formatFilesize($data['size'])));
 				$details->appendChild(new XMLElement('dt', __('Type:')));
 				$details->appendChild(new XMLElement('dd', General::sanitize($data['mimetype'])));
 				$wrapper->appendChild($details);
@@ -486,11 +504,11 @@
 	-------------------------------------------------------------------------*/
 		
 		public function appendFormattedElement(&$wrapper, $data) {
-			if (!is_file(WORKSPACE . $data['file'])) return;
+			if (!$this->sanitizeDataArray($data)) return null;
 			
 			$item = new XMLElement($this->get('element_name'));
 			$item->setAttributeArray(array(
-				'size'	=> General::formatFilesize(filesize(WORKSPACE . $data['file'])),
+				'size'	=> General::formatFilesize($data['size']),
 				'type'	=> General::sanitize($data['mimetype']),
 				'name'	=> General::sanitize($data['name'])
 			));
@@ -508,8 +526,7 @@
 		}
 		
 		public function prepareTableValue($data, XMLElement $link = null) {
-			if (!is_file(WORKSPACE . $data['file'])) return null;
-			if (!$file = $data['file']) return null;
+			if (!$this->sanitizeDataArray($data)) return null;
 			
 			if ($link) {
 				$link->setValue($data['name']);
@@ -517,7 +534,7 @@
 				return $link->generate();
 				
 			} else {
-				$link = Widget::Anchor($data['name'], URL . '/workspace' . $file);
+				$link = Widget::Anchor($data['name'], URL . '/workspace' . $data['file']);
 				
 				return $link->generate();
 			}
