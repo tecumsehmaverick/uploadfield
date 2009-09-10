@@ -7,26 +7,30 @@
 	margin: 0 0 2px 0;
 }
 
-.field-advancedupload > .upload {
-	background: #464645;
+.field-advancedupload > div {
+	background: rgb(55, 55, 52);
+	border: 1px solid rgb(55, 55, 52);
+}
+
+.field-advancedupload > div > .upload {
 	color: #ffffff;
 	display: block;
 	overflow: hidden;
 	padding: 12px;
 	position: relative;
 }
-.field-advancedupload > .upload input {
+.field-advancedupload > div > .upload input {
 	background: #464645;
 	color: #ffffff;
 }
 
-.field-advancedupload > .preview {
-	background: rgb(55, 55, 52);
+.field-advancedupload > div > .preview {
 	height: 6.5em;
+	overflow: hidden;
 	position: relative;
 	width: 100%;
 }
-.field-advancedupload > .preview img {
+.field-advancedupload > div > .preview img {
 	cursor: pointer;
 	max-height: 500%;
 	max-width: 100%;
@@ -34,38 +38,37 @@
 	vertical-align: bottom;
 }
 
-.field-advancedupload > .details {
-	background: rgb(55, 55, 52);
+.field-advancedupload > div > .details {
 	color: #ffffff;
 	display: block;
 	height: 4.5em;
 	padding: 1em;
 	position: relative;
 }
-.field-advancedupload > .preview + .details {
+.field-advancedupload > div > .preview + .details {
 	background: rgba(55, 55, 52, 0.6);
 	margin: -6.5em 0 0 0;
 	text-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
 }
-.field-advancedupload > .details a {
+.field-advancedupload > div > .details a {
 	color: #bbbbaa;
 	outline: none;
 }
-.field-advancedupload > .details a:hover {
+.field-advancedupload > div > .details a:hover {
 	color: #eeeedd;
 }
-.field-advancedupload > .details dt,
-.field-advancedupload > .details dd {
+.field-advancedupload > div > .details dt,
+.field-advancedupload > div > .details dd {
 	float: left;
 }
-.field-advancedupload > .details dt {
+.field-advancedupload > div > .details dt {
 	clear: both;
 	margin: 0 1ex;
 }
-.field-advancedupload > .details dt.clear {
+.field-advancedupload > div > .details dt.clear {
 	float: right;
 }
-.field-advancedupload > .details dt.popup {
+.field-advancedupload > div > .details dt.popup {
 	clear: none;
 }
 

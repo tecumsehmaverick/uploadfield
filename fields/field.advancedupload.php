@@ -224,6 +224,7 @@
 			}
 			
 			$wrapper->appendChild($label);
+			$container = new XMLElement('div');
 			
 			if ($error == null and !empty($data['file'])) {
 				if (!is_file(WORKSPACE . $data['file'])) {
@@ -236,7 +237,7 @@
 					$image = new XMLElement('img');
 					$image->setAttribute('src', URL . '/workspace' . $data['file']);
 					$preview->appendChild($image);
-					$wrapper->appendChild($preview);
+					$container->appendChild($preview);
 				}
 				
 				$details = new XMLElement('dl');
@@ -256,7 +257,7 @@
 				$details->appendChild(new XMLElement('dd', General::formatFilesize($data['size'])));
 				$details->appendChild(new XMLElement('dt', __('Type:')));
 				$details->appendChild(new XMLElement('dd', General::sanitize($data['mimetype'])));
-				$wrapper->appendChild($details);
+				$container->appendChild($details);
 			}
 			
 			$upload = new XMLElement('span');
@@ -265,7 +266,8 @@
 				"fields{$prefix}[{$handle}]{$postfix}",
 				$data['file'], ($data['file'] ? 'hidden' : 'file')
 			));
-			$wrapper->appendChild($upload);
+			$container->appendChild($upload);
+			$wrapper->appendChild($container);
 			
 			if ($error != null) {
 				$wrapper = Widget::wrapFormElementWithError($wrapper, $error);
