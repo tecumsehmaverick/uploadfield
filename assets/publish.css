@@ -31,27 +31,27 @@
 	position: relative;
 }
 .field-advancedupload > div > .details a {
-	color: #bbbbaa;
+	color: #ffffff;
 	outline: none;
 }
 .field-advancedupload > div > .details a:hover {
-	color: #eeeedd;
+	color: #ffffff;
 }
 .field-advancedupload > div > .details img {
 	cursor: pointer;
+	opacity: 0.8;
 	max-height: 500%;
 	max-width: 100%;
 	position: absolute;
 	vertical-align: bottom;
 }
 .field-advancedupload > div > .details dl {
-	background: rgba(55, 55, 52, 0.6);
 	bottom: 0;
 	left: 0;
 	padding: 1em;
 	position: absolute;
 	right: 0;
-	text-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+	text-shadow: 0 0 2px rgba(0, 0, 0, 0.9);
 	top: 0;
 }
 .field-advancedupload > div > .details dt,

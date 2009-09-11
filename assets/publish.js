@@ -3,6 +3,7 @@ jQuery(document).ready(function() {
 		var field = jQuery(this);
 		var upload = field.find('.upload');
 		var details = field.find('.details');
+		var list = details.find('dl');
 		var clear = details.find('.clear a');
 		var popup = details.find('.popup a');
 		var image = details.find('img');
@@ -22,9 +23,17 @@ jQuery(document).ready(function() {
 				upload.show();
 			});
 			
+			details.bind('mouseenter', function() {
+				image.fadeTo('fast', 0.4);
+			});
+			
+			details.bind('mouseleave', function() {
+				image.fadeTo('fast', 0.8);
+			});
+			
 			if (image.length) popup.bind('click', function() {
 				jQuery('<div class="field-advancedupload-overlay" />')
-					.append(image.clone())
+					.append(image.clone().fadeTo(0, 1))
 					.appendTo('body')
 					.bind('click', function() {
 						jQuery(this).remove();
