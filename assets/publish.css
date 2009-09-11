@@ -9,7 +9,6 @@
 
 .field-advancedupload > div {
 	background: rgb(55, 55, 52);
-	border: 1px solid rgb(55, 55, 52);
 }
 
 .field-advancedupload > div > .upload {
@@ -20,35 +19,16 @@
 	position: relative;
 }
 .field-advancedupload > div > .upload input {
-	background: #464645;
+	background: rgb(55, 55, 52);
 	color: #ffffff;
 }
 
-.field-advancedupload > div > .preview {
-	height: 6.5em;
-	overflow: hidden;
-	position: relative;
-	width: 100%;
-}
-.field-advancedupload > div > .preview img {
-	cursor: pointer;
-	max-height: 500%;
-	max-width: 100%;
-	position: absolute;
-	vertical-align: bottom;
-}
 
 .field-advancedupload > div > .details {
 	color: #ffffff;
 	display: block;
-	height: 4.5em;
-	padding: 1em;
+	height: 6.5em;
 	position: relative;
-}
-.field-advancedupload > div > .preview + .details {
-	background: rgba(55, 55, 52, 0.6);
-	margin: -6.5em 0 0 0;
-	text-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
 }
 .field-advancedupload > div > .details a {
 	color: #bbbbaa;
@@ -56,6 +36,23 @@
 }
 .field-advancedupload > div > .details a:hover {
 	color: #eeeedd;
+}
+.field-advancedupload > div > .details img {
+	cursor: pointer;
+	max-height: 500%;
+	max-width: 100%;
+	position: absolute;
+	vertical-align: bottom;
+}
+.field-advancedupload > div > .details dl {
+	background: rgba(55, 55, 52, 0.6);
+	bottom: 0;
+	left: 0;
+	padding: 1em;
+	position: absolute;
+	right: 0;
+	text-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+	top: 0;
 }
 .field-advancedupload > div > .details dt,
 .field-advancedupload > div > .details dd {
@@ -82,6 +79,8 @@
 	z-index: 20000;
 }
 .field-advancedupload-overlay img {
+	display: block;
+	margin: 0 auto;
 	max-height: 100%;
 	max-width: 100%;
 }

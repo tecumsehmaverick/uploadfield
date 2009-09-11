@@ -227,40 +227,39 @@
 			$container = new XMLElement('div');
 			
 			if ($error == null and !empty($data['file'])) {
+				$details = new XMLElement('div');
+				$details->setAttribute('class', 'details');
+				
 				if (!is_file(WORKSPACE . $data['file'])) {
 					$error = __('Destination file could not be found.');
 				}
 				
 				else if (in_array($data['mimetype'], $this->_mimes['image'])) {
-					$preview = new XMLElement('div');
-					$preview->setAttribute('class', 'preview');
 					$image = new XMLElement('img');
 					$image->setAttribute('src', URL . '/workspace' . $data['file']);
-					$preview->appendChild($image);
-					$container->appendChild($preview);
+					$details->appendChild($image);
 				}
 				
-				$details = new XMLElement('dl');
-				$details->setAttribute('class', 'details');
-				
+				$list = new XMLElement('dl');
 				$link = new XMLElement('a', __('Clear File'));
 				$item = new XMLElement('dt', $link->generate());
 				$item->setAttribute('class', 'clear');
-				$details->appendChild($item);
+				$list->appendChild($item);
 				
 				$link = Widget::Anchor($data['name'], URL . '/workspace' . $data['file']);
 				$item = new XMLElement('dt', $link->generate());
 				$item->setAttribute('class', 'popup');
-				$details->appendChild($item);
+				$list->appendChild($item);
 				
-				$details->appendChild(new XMLElement('dt', __('Size:')));
-				$details->appendChild(new XMLElement('dd', General::formatFilesize($data['size'])));
-				$details->appendChild(new XMLElement('dt', __('Type:')));
-				$details->appendChild(new XMLElement('dd', General::sanitize($data['mimetype'])));
+				$list->appendChild(new XMLElement('dt', __('Size:')));
+				$list->appendChild(new XMLElement('dd', General::formatFilesize($data['size'])));
+				$list->appendChild(new XMLElement('dt', __('Type:')));
+				$list->appendChild(new XMLElement('dd', General::sanitize($data['mimetype'])));
+				$details->appendChild($list);
 				$container->appendChild($details);
 			}
 			
-			$upload = new XMLElement('span');
+			$upload = new XMLElement('div');
 			$upload->setAttribute('class', 'upload');
 			$upload->appendChild(Widget::Input(
 				"fields{$prefix}[{$handle}]{$postfix}",
