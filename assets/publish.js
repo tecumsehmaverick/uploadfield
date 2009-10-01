@@ -35,8 +35,13 @@ jQuery(document).ready(function() {
 				jQuery('<div class="field-advancedupload-overlay" />')
 					.append(image.clone().fadeTo(0, 1))
 					.appendTo('body')
+					.hide().fadeIn('fast')
 					.bind('click', function() {
-						jQuery(this).remove();
+						jQuery(this)
+							.unbind('click')
+							.fadeOut('fast', function() {
+								jQuery(this).remove();
+							});
 					});
 					
 				return false;
