@@ -283,7 +283,7 @@
 			$filename = sprintf(
 				'%s-%s%s',
 				Lang::createHandle($meta[1]),
-				md5(time()), $meta[2]
+				dechex(time()), $meta[2]
 			);
 			
 			return $filename;
@@ -324,7 +324,7 @@
 						break;
 						
 					case UPLOAD_ERR_FORM_SIZE:
-						$size = General::formatFilesize(Symphony::Configuration()->get('max_upload_size', 'admin'));
+						$size = General::formatFilesize($this->_engine->Configuration->get('max_upload_size', 'admin'));
 						$message = __('File chosen in \'%s\' exceeds the maximum allowed upload size of {$size}, specified by Symphony.', $label);
 						break;
 						
@@ -451,7 +451,7 @@
 			if (!General::uploadFile(
 				DOCROOT . '/' . trim($this->get('destination'), '/'),
 				$data['name'], $data['tmp_name'],
-				Symphony::Configuration()->get('write_mode', 'file')
+				$this->_engine->Configuration->get('write_mode', 'file')
 			)) {
 				$message = __(
 					'There was an error while trying to upload the file <code>%s</code> to the target directory <code>workspace/%s</code>.',
