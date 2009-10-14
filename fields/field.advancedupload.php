@@ -307,11 +307,14 @@
 			if (!is_array($data)) return self::__OK__;
 			
 			if (!is_writable(DOCROOT . $this->get('destination') . '/')) {
-				$message = 'Destination folder, <code>' . $this->get('destination') . '</code>, is not writable. Please check permissions.';
+				$message = __(
+					'Destination folder, <code>%s</code>, is not writable. Please check permissions.',
+					array($this->get('destination'))
+				);
 				
 				return self::__ERROR__;
 			}
-
+			
 			if ($data['error'] != UPLOAD_ERR_NO_FILE and $data['error'] != UPLOAD_ERR_OK) {
 				switch($data['error']) {
 					case UPLOAD_ERR_INI_SIZE:
@@ -320,25 +323,40 @@
 							? General::formatFilesize(ini_get('upload_max_filesize'))
 							: ini_get('upload_max_filesize')
 						);
-						$message = __('File chosen in \'%s\' exceeds the maximum allowed upload size of %s specified by your host.', $label, $size);
+						$message = __(
+							'File chosen in \'%s\' exceeds the maximum allowed upload size of %s specified by your host.',
+							array($label, $size)
+						);
 						break;
 						
 					case UPLOAD_ERR_FORM_SIZE:
 						$size = General::formatFilesize(Symphony::Configuration()->get('max_upload_size', 'admin'));
-						$message = __('File chosen in \'%s\' exceeds the maximum allowed upload size of {$size}, specified by Symphony.', $label);
+						$message = __(
+							'File chosen in \'%s\' exceeds the maximum allowed upload size of %s, specified by Symphony.',
+							array($label, $size)
+						);
 						break;
 						
 					case UPLOAD_ERR_PARTIAL:
 					case UPLOAD_ERR_NO_TMP_DIR:
-						$message = __('File chosen in \'%s\' was only partially uploaded due to an error.', $label);
+						$message = __(
+							'File chosen in \'%s\' was only partially uploaded due to an error.',
+							array($label)
+						);
 						break;
 						
 					case UPLOAD_ERR_CANT_WRITE:
-						$message = __('Uploading \'%s\' failed. Could not write temporary file to disk.', $label);
+						$message = __(
+							'Uploading \'%s\' failed. Could not write temporary file to disk.',
+							array($label)
+						);
 						break;
 						
 					case UPLOAD_ERR_EXTENSION:
-						$message = __('Uploading \'%s\' failed. File upload stopped by extension.', $label);
+						$message = __(
+							'Uploading \'%s\' failed. File upload stopped by extension.',
+							array($label)
+						);
 						break;
 				}
 				
@@ -354,7 +372,10 @@
 				$rule = $this->get('validator');
 				
 				if (!General::validateString($data['name'], $rule)) {
-					$message = "File chosen in '{$label}' does not match allowable file types for that field.";
+					$message = __(
+						'File chosen in \'%s\' does not match allowable file types for that field.',
+						array($label)
+					);
 					
 					return self::__INVALID_FIELDS__;
 				}
@@ -379,7 +400,10 @@
 			}
 			
 			if (($existing_file != $new_file) and file_exists($new_file)) {
-				$message = __('A file with the name %s already exists in %s. Please rename the file first, or choose another.', $data['name'], $this->get('destination'));
+				$message = __(
+					'A file with the name %s already exists in %s. Please rename the file first, or choose another.',
+					array($data['name'], $this->get('destination'))
+				);
 				
 				return self::__INVALID_FIELDS__;				
 			}
@@ -455,7 +479,7 @@
 			)) {
 				$message = __(
 					'There was an error while trying to upload the file <code>%s</code> to the target directory <code>workspace/%s</code>.',
-					$data['name'], $path
+					array($data['name'], $path)
 				);
 				$status = self::__ERROR_CUSTOM__;
 				return;
