@@ -24,6 +24,9 @@
 					'image/jpeg',
 					'image/png'
 				),
+				'video'	=> array(
+					'video/quicktime'
+				),
 				'text'	=> array(
 					'text/plain',
 					'text/html'
@@ -215,7 +218,7 @@
 			
 			$handle = $this->get('element_name');
 			
-		// Image --------------------------------------------------------------
+		// Preview ------------------------------------------------------------
 			
 			$label = Widget::Label($this->get('label'));
 			
@@ -240,6 +243,19 @@
 					$details->appendChild($image);
 				}
 				
+				else if (in_array($data['mimetype'], $this->_mimes['video'])) {
+					$preview = new XMLElement('embed');
+					$preview->setAttribute('src', URL . '/workspace' . $data['file']);
+					$preview->setAttribute('autoplay', 'false');
+					$preview->setAttribute('controller', 'true');
+					$preview->setAttribute('height', '240');
+					$preview->setAttribute('pluginspage', 'http://www.apple.com/quicktime/download/');
+					$preview->setAttribute('scale', 'aspect');
+					$preview->setAttribute('type', 'video/quicktime');
+					$preview->setAttribute('width', '320');
+					$wrapper->appendChild($preview);
+				}
+				
 				$list = new XMLElement('dl');
 				$link = new XMLElement('a', __('Clear File'));
 				$item = new XMLElement('dt', $link->generate());
@@ -258,6 +274,8 @@
 				$details->appendChild($list);
 				$container->appendChild($details);
 			}
+			
+		// Upload -------------------------------------------------------------
 			
 			$upload = new XMLElement('div');
 			$upload->setAttribute('class', 'upload');

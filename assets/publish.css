@@ -7,6 +7,10 @@
 	margin: 0 0 2px 0;
 }
 
+.field-advancedupload > embed {
+	width: 100%;
+}
+
 .field-advancedupload > div {
 	background: rgb(55, 55, 52);
 }
