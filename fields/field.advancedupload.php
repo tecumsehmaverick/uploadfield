@@ -233,6 +233,19 @@
 				$details = new XMLElement('div');
 				$details->setAttribute('class', 'details');
 				
+				###
+				# Delegate: UploadField_AppendMediaPreview
+				# Description: Allow other extensions to add media previews.
+				Administration::instance()->ExtensionManager->notifyMembers(
+					'UploadField_AppendMediaPreview',
+					'/publish/', array(
+						'data'		=> $data,
+						'entry_id'	=> $entry_id,
+						'field_id'	=> $this->get('id'),
+						'wrapper'	=> $container
+					)
+				);
+				
 				if (!is_file(WORKSPACE . $data['file'])) {
 					$error = __('Destination file could not be found.');
 				}
@@ -243,6 +256,7 @@
 					$details->appendChild($image);
 				}
 				
+				/*
 				else if (in_array($data['mimetype'], $this->_mimes['video'])) {
 					$preview = new XMLElement('embed');
 					$preview->setAttribute('src', URL . '/workspace' . $data['file']);
@@ -255,6 +269,7 @@
 					$preview->setAttribute('width', '320');
 					$wrapper->appendChild($preview);
 				}
+				*/
 				
 				$list = new XMLElement('dl');
 				$link = new XMLElement('a', __('Clear File'));
@@ -508,13 +523,27 @@
 				General::deleteFile(WORKSPACE . $existing['file']);
 			}
 			
-			return array(
+			$data = array(
 				'name'		=> $name,
 				'file'		=> $path . '/' . trim($data['name'], '/'),
 				'size'		=> $data['size'],
 				'mimetype'	=> $data['type'],
 				'meta'		=> serialize($this->getMetaInfo(WORKSPACE . $file, $data['type']))
 			);
+			
+			###
+			# Delegate: UploadField_PostProccessFile
+			# Description: Allow other extensions to add media previews.
+			Administration::instance()->ExtensionManager->notifyMembers(
+				'UploadField_PostProccessFile',
+				'/publish/', array(
+					'data'		=> $data,
+					'entry_id'	=> $entry_id,
+					'field_id'	=> $this->get('id')
+				)
+			);
+			
+			return $data;
 		}
 		
 		protected function getMimeType($file) {
@@ -564,6 +593,19 @@
 			if (is_array($meta) and !empty($meta)) {
 				$item->appendChild(new XMLElement('meta', null, $meta));
 			}
+			
+			###
+			# Delegate: UploadField_AppendFormattedElement
+			# Description: Allow other extensions to add media previews.
+			Administration::instance()->ExtensionManager->notifyMembers(
+				'UploadField_AppendFormattedElement',
+				'/publish/', array(
+					'data'		=> $data,
+					'entry_id'	=> $entry_id,
+					'field_id'	=> $this->get('id'),
+					'wrapper'	=> $item
+				)
+			);
 			
 			$wrapper->appendChild($item);
 		}
