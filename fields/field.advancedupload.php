@@ -4,7 +4,8 @@
 	
 	class FieldAdvancedUpload extends Field {
 		protected $_mimes = array();
-		protected $_driver = null;
+		protected $Driver = null;
+		protected $Symphony = null;
 		
 	/*-------------------------------------------------------------------------
 		Definition:
@@ -13,9 +14,18 @@
 		public function __construct(&$parent) {
 			parent::__construct($parent);
 			
+			if (class_exists(Administration)) {
+				$this->Symphony = Administration::instance();
+			}
+			
+			else {
+				$this->Symphony = Frontend::instance();
+			}
+			
+			$this->Driver = $this->Symphony->ExtensionManager->create('advanceduploadfield');
+			
 			$this->_name = 'Advanced Upload';
 			$this->_required = true;
-			$this->_driver = $this->_engine->ExtensionManager->create('advanceduploadfield');
 			$this->_mimes = array(
 				'image'	=> array(
 					'image/bmp',
@@ -40,7 +50,7 @@
 		public function createTable() {
 			$field_id = $this->get('id');
 			
-			return $this->_engine->Database->query("
+			return $this->Symphony->Database->query("
 				CREATE TABLE IF NOT EXISTS `tbl_entries_data_{$field_id}` (
 					`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 					`entry_id` INT(11) UNSIGNED NOT NULL,
@@ -194,7 +204,7 @@
 				'serialise'		=> ($this->get('serialise') == 'yes' ? 'yes' : 'no')
 			);
 			
-			$this->_engine->Database->query("
+			$this->Symphony->Database->query("
 				DELETE FROM
 					`tbl_fields_{$handle}`
 				WHERE
@@ -202,7 +212,7 @@
 				LIMIT 1
 			");
 			
-			return $this->_engine->Database->insert($fields, "tbl_fields_{$handle}");
+			return $this->Symphony->Database->insert($fields, "tbl_fields_{$handle}");
 		}
 		
 	/*-------------------------------------------------------------------------
@@ -210,7 +220,7 @@
 	-------------------------------------------------------------------------*/
 		
 		public function displayPublishPanel(&$wrapper, $data = null, $error = null, $prefix = null, $postfix = null, $entry_id = null) {
-			$this->_driver->addHeaders($this->_engine->Page);
+			$this->Driver->addHeaders($this->Symphony->Page);
 			
 			if (!$error and !is_writable(DOCROOT . $this->get('destination') . '/')) {
 				$error = 'Destination folder, <code>'.$this->get('destination').'</code>, is not writable. Please check permissions.';
@@ -236,7 +246,7 @@
 				###
 				# Delegate: UploadField_AppendMediaPreview
 				# Description: Allow other extensions to add media previews.
-				Administration::instance()->ExtensionManager->notifyMembers(
+				$this->Symphony->ExtensionManager->notifyMembers(
 					'UploadField_AppendMediaPreview',
 					'/publish/', array(
 						'data'		=> $data,
@@ -255,21 +265,6 @@
 					$image->setAttribute('src', URL . '/workspace' . $data['file']);
 					$details->appendChild($image);
 				}
-				
-				/*
-				else if (in_array($data['mimetype'], $this->_mimes['video'])) {
-					$preview = new XMLElement('embed');
-					$preview->setAttribute('src', URL . '/workspace' . $data['file']);
-					$preview->setAttribute('autoplay', 'false');
-					$preview->setAttribute('controller', 'true');
-					$preview->setAttribute('height', '240');
-					$preview->setAttribute('pluginspage', 'http://www.apple.com/quicktime/download/');
-					$preview->setAttribute('scale', 'aspect');
-					$preview->setAttribute('type', 'video/quicktime');
-					$preview->setAttribute('width', '320');
-					$wrapper->appendChild($preview);
-				}
-				*/
 				
 				$list = new XMLElement('dl');
 				$link = new XMLElement('a', __('Clear File'));
@@ -508,7 +503,7 @@
 			if (!General::uploadFile(
 				DOCROOT . '/' . trim($this->get('destination'), '/'),
 				$data['name'], $data['tmp_name'],
-				$this->_engine->Configuration->get('write_mode', 'file')
+				$this->Symphony->Configuration->get('write_mode', 'file')
 			)) {
 				$message = __(
 					'There was an error while trying to upload the file <code>%s</code> to the target directory <code>workspace/%s</code>.',
@@ -534,7 +529,7 @@
 			###
 			# Delegate: UploadField_PostProccessFile
 			# Description: Allow other extensions to add media previews.
-			Administration::instance()->ExtensionManager->notifyMembers(
+			$this->Symphony->ExtensionManager->notifyMembers(
 				'UploadField_PostProccessFile',
 				'/publish/', array(
 					'data'		=> $data,
@@ -597,7 +592,7 @@
 			###
 			# Delegate: UploadField_AppendFormattedElement
 			# Description: Allow other extensions to add media previews.
-			Administration::instance()->ExtensionManager->notifyMembers(
+			$this->Symphony->ExtensionManager->notifyMembers(
 				'UploadField_AppendFormattedElement',
 				'/publish/', array(
 					'data'		=> $data,
