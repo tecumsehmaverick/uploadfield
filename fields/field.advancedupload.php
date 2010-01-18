@@ -570,7 +570,7 @@
 		Output:
 	-------------------------------------------------------------------------*/
 		
-		public function appendFormattedElement(&$wrapper, $data) {
+		public function appendFormattedElement(&$wrapper, $data, $encode = false, $mode = null, $entry_id = null) {
 			if (!$this->sanitizeDataArray($data)) return null;
 			
 			$item = new XMLElement($this->get('element_name'));
@@ -594,7 +594,7 @@
 			# Description: Allow other extensions to add media previews.
 			$this->Symphony->ExtensionManager->notifyMembers(
 				'UploadField_AppendFormattedElement',
-				'/publish/', array(
+				'/frontend/', array(
 					'data'		=> $data,
 					'entry_id'	=> $entry_id,
 					'field_id'	=> $this->get('id'),
