@@ -1,5 +1,5 @@
 jQuery(document).ready(function() {
-	jQuery('.field-advancedupload').each(function() {
+	jQuery('.field-upload').each(function() {
 		var field = jQuery(this);
 		var upload = field.find('.upload');
 		var details = field.find('.details');
@@ -32,7 +32,7 @@ jQuery(document).ready(function() {
 			});
 			
 			if (image.length) popup.bind('click', function() {
-				jQuery('<div class="field-advancedupload-overlay" />')
+				jQuery('<div class="field-upload-overlay" />')
 					.append(image.clone().fadeTo(0, 1))
 					.appendTo('body')
 					.hide().fadeIn('fast')
