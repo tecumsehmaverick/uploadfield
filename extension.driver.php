@@ -48,7 +48,7 @@
 		protected $addedHeaders = false;
 		
 		public function addHeaders($page) {
-			if (!$this->addedHeaders) {
+			if (!is_null($page) && !$this->addedHeaders) {
 				$page->addStylesheetToHead(URL . '/extensions/uploadfield/assets/publish.css', 'screen', 9745190);
 				$page->addScriptToHead(URL . '/extensions/uploadfield/assets/publish.js', 9745190);
 				
