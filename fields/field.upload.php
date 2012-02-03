@@ -456,7 +456,7 @@
 				)
 			);
 
-			if ($simulate) return;
+			if($simulate && is_null($entry_id)) return $data;
 
 			// No file sent, cleanup existing:
 			if (is_null($data) or $data == '' or (isset($data['error']) and $data['error'] != UPLOAD_ERR_OK)) {
@@ -542,8 +542,8 @@
 
 			return 'application/octet-stream';
 		}
-
-		protected function getMetaInfo($file, $type) {
+		
+		public function getMetaInfo($file, $type) {
 			$meta = array(
 				'creation'	=> DateTimeObj::get('c', filemtime($file))
 			);
@@ -614,5 +614,3 @@
 			}
 		}
 	}
-
-?>
