@@ -535,14 +535,14 @@
 			return $data;
 		}
 
-		protected function getMimeType($file) {
+		public function getMimeType($file) {
 			if (in_array('image/' . General::getExtension($file), $this->_mimes['image'])) {
 				return 'image/' . General::getExtension($file);
 			}
 
 			return 'application/octet-stream';
 		}
-		
+
 		public function getMetaInfo($file, $type) {
 			$meta = array(
 				'creation'	=> DateTimeObj::get('c', filemtime($file))
